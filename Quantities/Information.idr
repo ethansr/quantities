@@ -2,6 +2,8 @@ module Quantities.Information
 
 import Quantities.Core
 
+%access public export
+
 Information : Dimension
 Information = MkDimension "Information"
 

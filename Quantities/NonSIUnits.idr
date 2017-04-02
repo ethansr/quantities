@@ -8,7 +8,7 @@ import Quantities.SIBaseUnits
 import Quantities.SIDerivedUnits
 
 %default total
-%access public
+%access public export
 
 
 -- Based on http://en.wikipedia.org/wiki/Non-SI_units_mentioned_in_the_SI
