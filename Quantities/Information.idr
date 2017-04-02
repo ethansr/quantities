@@ -14,7 +14,7 @@ Byte = < one "byte" equals 8 Bit >
 -- Binary prefixes for multiples of bits/bytes
 -- Based on http://en.wikipedia.org/wiki/Binary_prefix
 
-private
+-- private
 twoToTheTen : String -> Nat -> ElemUnit q -> ElemUnit q
 twoToTheTen pre power (MkElemUnit name f) =
   < one (pre ++ name) equals (pow 1024.0 power) (MkElemUnit name f) >

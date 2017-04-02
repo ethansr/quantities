@@ -4,7 +4,7 @@ import public Quantities.FreeAbelianGroup
 import public Quantities.Power
 
 %default total
-%access public
+%access public export
 
 ||| Elementary quantities
 record Dimension where
@@ -58,7 +58,7 @@ record ElemUnit (q : Quantity) where
 ElemUnit' : Type
 ElemUnit' = (q : Quantity ** ElemUnit q)
 
-private
+-- private
 name' : ElemUnit' -> String
 name' (q ** u) = name u
 
@@ -76,10 +76,10 @@ elemUnitToElemUnit'FreeAbGrp : ElemUnit q -> FreeAbGrp ElemUnit'
 elemUnitToElemUnit'FreeAbGrp {q} u = inject (q ** u)
 
 conversionRate' : ElemUnit' -> Double
-conversionRate' u = conversionRate (getProof u)
+conversionRate' u = conversionRate (snd u)
 
 joinedQuantity : FreeAbGrp ElemUnit' -> Quantity
-joinedQuantity = lift getWitness
+joinedQuantity = lift fst
 
 data Unit : Quantity -> Type where
   MkUnit : (exponent : Integer) -> (elemUnits' : FreeAbGrp ElemUnit') ->
@@ -91,7 +91,7 @@ rewriteUnit eq unit = rewrite eq in unit
 base10Exponent : Unit q -> Integer
 base10Exponent (MkUnit e _) = e
 
-private
+-- private
 getElemUnits' : Unit q -> FreeAbGrp ElemUnit'
 getElemUnits' (MkUnit _ us) = us
 
@@ -163,7 +163,7 @@ showUnit (MkUnit e (MkFreeAbGrp (u :: us))) = if e == 0 then fromUnits
         monom (unit, i) = name' unit ++ "^" ++ show i
         fromUnits = monom u ++ concatMap ((" " ++) . monom) us
 
-private
+-- private
 toSuperScript : Char -> Char
 toSuperScript '1' = '¹'
 toSuperScript '2' = '²'
@@ -178,7 +178,7 @@ toSuperScript '0' = '⁰'
 toSuperScript '-' = '⁻'
 toSuperScript x   = x
 
-private
+-- private
 toSuper : String -> String
 toSuper = pack . map toSuperScript . unpack
 
@@ -197,7 +197,7 @@ infixr 10 ^^
 ||| Power unit
 (^^) : Unit q -> (i : Integer) -> Unit (q ^ i)
 (^^) (MkUnit e us) i = rewriteUnit eq (MkUnit (i*e) (us ^ i))
-  where eq = really_believe_me (Refl {x=(lift Prelude.Pairs.Sigma.getWitness (us ^ i))})
+  where eq = really_believe_me (Refl {x=(lift fst (us ^ i))})
   -- this should be:
   -- eq = sym (lift_power_lem Prelude.Pairs.Sigma.getWitness us i)
   -- but Idris doesn't accept this anymore since 0.9.18 and throws a
@@ -213,7 +213,7 @@ infixl 6 <**>,<//>
 ||| Product unit
 (<**>) : Unit r -> Unit s -> Unit (r <*> s)
 (<**>) (MkUnit e rs) (MkUnit f ss) = rewriteUnit eq (MkUnit (e+f) (rs <*> ss))
-  where eq = really_believe_me (Refl {x=(lift Prelude.Pairs.Sigma.getWitness (rs <*> ss))})
+  where eq = really_believe_me (Refl {x=(lift fst (rs <*> ss))})
   -- this should be:
   -- eq = sym (lift_mult_lem Prelude.Pairs.Sigma.getWitness rs ss)
   -- but Idris doesn't accept this anymore since 0.9.18 and throws a
